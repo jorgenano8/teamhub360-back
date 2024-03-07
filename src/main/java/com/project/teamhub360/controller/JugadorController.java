@@ -79,6 +79,7 @@ public class JugadorController {
             jugador.setApellidos(jugadorDTO.getApellidos());
             jugador.setDni(jugadorDTO.getDni());
             jugador.setFechaNac(jugadorDTO.getFechaNac());
+            jugadorService.save(jugador);
             return new ResponseEntity<>(jugador, HttpStatus.OK);
 
         }else{
