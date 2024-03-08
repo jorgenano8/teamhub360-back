@@ -1,6 +1,7 @@
 package com.project.teamhub360.controller;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -67,10 +68,15 @@ public class JugadorController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody JugadorDTO jugadorDTO){
         if(jugadorService.existsById(id)){ 
-
+            
             if(jugadorService.existsByDni(jugadorDTO.getDni()) && jugadorService.findByDni(jugadorDTO.getDni()).get().getId()!= id){
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI proporcionado ya pertenece a un jugador/a."));
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+                Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI proporcionado ya pertenece a un jugador/a."));
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
+
+            if(!jugadorDTO.getFechaNac().before(new Date())){
+                Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("La fecha de nacimiento proporcionada debe ser anterior a hoy"));
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
             }
 
             Jugador jugador = jugadorService.findById(id).get();
