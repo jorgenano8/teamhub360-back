@@ -54,7 +54,7 @@ public class JugadorController {
     public ResponseEntity<?> save(@RequestBody @Valid JugadorDTO jugadorDTO){
 
         if (jugadorService.existsByDni(jugadorDTO.getDni())) {
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI proporcionado ya existe."));
+            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI proporcionado ya pertenece a un jugador/a."));
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
@@ -64,13 +64,12 @@ public class JugadorController {
 
     }
 
-    //TODO
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody JugadorDTO jugadorDTO){
         if(jugadorService.existsById(id)){ 
 
             if(jugadorService.existsByDni(jugadorDTO.getDni()) && jugadorService.findByDni(jugadorDTO.getDni()).get().getId()!= id){
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI del jugador proporcionado no coincide."));
+            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI proporcionado ya pertenece a un jugador/a."));
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
             }
 
@@ -83,7 +82,7 @@ public class JugadorController {
             return new ResponseEntity<>(jugador, HttpStatus.OK);
 
         }else{
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El ID del jugador proporcionado no existe."));
+            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El ID proporcionado no pertenece a ningún jugador/a."));
             return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
         }
 
@@ -92,7 +91,7 @@ public class JugadorController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         if(!jugadorService.existsById(id)){
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El ID del jugador proporcionado no existe."));
+            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El ID proporcionado no pertenece a ningún jugador/a."));
             return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
         }
 
