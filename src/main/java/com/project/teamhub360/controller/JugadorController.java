@@ -1,12 +1,8 @@
 package com.project.teamhub360.controller;
 
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,76 +29,27 @@ public class JugadorController {
     JugadorService jugadorService;
 
     @GetMapping
-    public ResponseEntity<List<Jugador>> findAll(){
-        return new ResponseEntity<>(jugadorService.findAll(), HttpStatus.OK);
-    } 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id){
-
-        if(!jugadorService.existsById(id)){
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El ID proporcionado no existe."));
-            return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
-        }
-
-        Jugador jugador = jugadorService.findById(id).get();
-        return new ResponseEntity<>(jugador, HttpStatus.OK);
-
+    public ResponseEntity<List<Jugador>> findAll() {
+        return jugadorService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return jugadorService.findById(id);
+    }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody @Valid JugadorDTO jugadorDTO){
-
-        if (jugadorService.existsByDni(jugadorDTO.getDni())) {
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI proporcionado ya pertenece a un jugador/a."));
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Jugador jugador = new Jugador(jugadorDTO.getNombre(), jugadorDTO.getApellidos(), jugadorDTO.getDni(), jugadorDTO.getFechaNac());
-        jugadorService.save(jugador);
-        return new ResponseEntity<>(jugador, HttpStatus.OK);
-
+    public ResponseEntity<?> save(@RequestBody @Valid JugadorDTO jugadorDTO) {
+        return jugadorService.save(jugadorDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody JugadorDTO jugadorDTO){
-        if(jugadorService.existsById(id)){ 
-            
-            if(jugadorService.existsByDni(jugadorDTO.getDni()) && jugadorService.findByDni(jugadorDTO.getDni()).get().getId()!= id){
-                Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El DNI proporcionado ya pertenece a un jugador/a."));
-                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-            }
-
-            if(!jugadorDTO.getFechaNac().before(new Date())){
-                Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("La fecha de nacimiento proporcionada debe ser anterior a hoy"));
-                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-            }
-
-            Jugador jugador = jugadorService.findById(id).get();
-            jugador.setNombre(jugadorDTO.getNombre());
-            jugador.setApellidos(jugadorDTO.getApellidos());
-            jugador.setDni(jugadorDTO.getDni());
-            jugador.setFechaNac(jugadorDTO.getFechaNac());
-            jugadorService.save(jugador);
-            return new ResponseEntity<>(jugador, HttpStatus.OK);
-
-        }else{
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El ID proporcionado no pertenece a ningún jugador/a."));
-            return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
-        }
-
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody JugadorDTO jugadorDTO) {
+        return jugadorService.update(id, jugadorDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id){
-        if(!jugadorService.existsById(id)){
-            Map<String, List<String>> errors = Collections.singletonMap("errors", Collections.singletonList("El ID proporcionado no pertenece a ningún jugador/a."));
-            return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
-        }
-
-        jugadorService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return jugadorService.deleteById(id);
     }
 }
